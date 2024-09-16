@@ -1,130 +1,50 @@
-<html><!-- HEADER --><head>
-        <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
-        <title>デモページ</title>
-        <link rel="icon" href="resources/img/icon.png">
-    </head>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デモページのインデックス</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .link-container {
+            margin-top: 30px;
+        }
+        .demo-link {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            color: white;
+            background-color: #007BFF;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .demo-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
 
-    <!-- MAIN BODY -->
-    <body>
-        <div class="main">
-            <!-- HEADER -->
-            <br>
-            <h1 class="wrapper">音声変換における言語特徴表現の近いによる品質の検証 デモページ</h1>
-            <p class="wrapper">2023年度 IEICE 信越支部大会 ポスターセッション</p>
+    <h1>デモページのインデックス</h1>
+    <p>このページは、デモ音声ページのルートです。以下のリンクから、それぞれのデモページにアクセスできます。</p>
 
-            <!-- ABSTRACT -->
-            <br><br>
-            <h2 class="wrapper">ポスタースライド</h2>
-        
+    <div class="link-container">
+        <a href="demo2023.html" class="demo-link">デモ2023</a>
+        <a href="demo2024.html" class="demo-link">デモ2024</a>
+    </div>
 
-            <img src="src/image/poster.png" width="70%"></img>
-
-            <!-- 2 AUDIO SAMPLES (SEEN)-->
-            <br><br>
-            <h2 class="wrapper">One-shot Many-to-Many Voice Conversion (SEEN speaker)</h2>
-            <p class="wrapper">学習に使用した話者―→学習に使用した話者への音声変換のサンプル(<a href="https://sites.google.com/site/shinnosuketakamichi/research-topics/jvs_corpus">JVSコーパス</a>).</p>
-
-            <div class="vcpair">
-                <table class="wrapper">
-                    <tbody style="margin-right: auto; text-align: center;">
-                        <tr>
-                            <td></td>
-                            <th><b>Source</b></th>
-                            <th><b>Target</b></th>
-                            <th><b>平均声(先行研究)</b></th>
-                            <th><b>提案手法</b></th>
-                        </tr>
-
-                        <tr>
-                            <td>ケース1</td>
-                            <td><audio controls=""><source src="src/audio/train_sample_1_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_1_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_1_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_1_wav/convert_t.wav"></audio></td>
-                        </tr>
-                        
-                        <tr>
-                            <td>ケース2</td>
-                            <td><audio controls=""><source src="src/audio/train_sample_2_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_2_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_2_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_2_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                        <tr>
-                            <td>ケース3</td>
-                            <td><audio controls=""><source src="src/audio/train_sample_3_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_3_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_3_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_3_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                        <tr>
-                            <td>ケース4</td>
-                            <td><audio controls=""><source src="src/audio/train_sample_4_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_4_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_4_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/train_sample_4_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-
-
-            <!-- 3 AUDIO SAMPLES (UNSEEN)-->
-            <br><br>
-            <h2 class="wrapper">One-shot Any-to-Any Voice Conversion (UNSEEN speaker)</h2>
-            <p class="wrapper">学習に使用していない話者―→学習に使用していない話者への音声変換のサンプル(<a href="https://sites.google.com/site/shinnosuketakamichi/research-topics/jvs_corpus">JVSコーパス</a>)</p>
-
-            <div class="vcpair">
-                <table class="wrapper">
-                    <tbody style="margin-right: auto; text-align: center;">
-                        <tr>
-                            <td></td>
-                            <th><b>Source</b></th>
-                            <th><b>Target</b></th>
-                            <th><b>平均声(先行研究)</b></th>
-                            <th><b>提案手法</b></th>
-                        </tr>
-
-                        <tr>
-                            <td>ケース1</td>
-                            <td><audio controls=""><source src="src/audio/test_sample_1_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_1_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_1_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_1_wav/convert_t.wav"></audio></td>
-                        </tr>
-                        
-                        <tr>
-                            <td>ケース2</td>
-                            <td><audio controls=""><source src="src/audio/test_sample_2_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_2_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_2_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_2_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                        <tr>
-                            <td>ケース3</td>
-                            <td><audio controls=""><source src="src/audio/test_sample_3_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_3_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_3_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_3_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                        <tr>
-                            <td>ケース4</td>
-                            <td><audio controls=""><source src="src/audio/test_sample_4_wav/source.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_4_wav/target.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_4_wav/convert.wav"></audio></td>
-                            <td><audio controls=""><source src="src/audio/test_sample_4_wav/convert_t.wav"></audio></td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-    
-
-</body></html>
+</body>
+</html>
