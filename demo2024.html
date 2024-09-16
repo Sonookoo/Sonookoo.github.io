@@ -35,6 +35,12 @@
             font-size: 0.9em;
             color: #333;
         }
+        .torikeshi {
+            text-decoration: line-through;
+        }
+        .add {
+            background: linear-gradient(transparent 0%, #f6ff5f 0%);
+        }
     </style>
 </head>
 <body>
@@ -44,7 +50,7 @@
     <!-- サンプル1 -->
     <div class="sample-container">
         <div class="sample-title">Sample 1</div>
-        <p>"I was concerned with the way they tried to justify his actions." → "I was concerned with the way they tried to justify his problem."</p>
+        <p>"I was concerned with the way they tried to justify his <span class="torikeshi">actions</span>." → "I was concerned with the way they tried to justify his <span class="add">problem</span>."</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
@@ -76,7 +82,7 @@
     <!-- サンプル2 -->
     <div class="sample-container">
         <div class="sample-title">Sample 2</div>
-        <p>"You'd better believe it." → "You'd better believe it."</p>
+        <p>"You'd better believe it." → "You'd better <span class="add">not</span> believe it."</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
@@ -108,7 +114,7 @@
     <!-- サンプル3 -->
     <div class="sample-container">
         <div class="sample-title">Sample 3</div>
-        <p>"Treatment is not an issue with these people." → "Treatment is not an issue with these animals."</p>
+        <p>"Treatment is not an issue with these <span class="torikeshi">people</span>." → "Treatment is not an issue with these <span class="add">animals</span>."</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
@@ -140,7 +146,7 @@
     <!-- サンプル4 -->
     <div class="sample-container">
         <div class="sample-title">Sample 4</div>
-        <p>"The difference in the rainbow depends considerably upon the size of the drops, and the width of the colored band increases as the size of the drops increases." → "The difference in the rainbow depends considerably upon the size of the drops."</p>
+        <p>"The difference in the rainbow depends considerably upon the size of the drops, <span class="torikeshi">and the width of the colored band increases as the size of the drops increases.</span>" → "The difference in the rainbow depends considerably upon the size of the drops."</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
@@ -172,7 +178,7 @@
     <!-- サンプル5 -->
     <div class="sample-container">
         <div class="sample-title">Sample 5</div>
-        <p>"The difference in the rainbow depends considerably upon the size of the drops, and the width of the colored band increases as the size of the drops increases." → "The difference in the rainbow depends considerably upon the size of the drops. As the size of the droplets increases, the width of the colored band also expands."</p>
+        <p>"The difference in the rainbow depends considerably upon the size of the drops, <span class="torikeshi">and the width of the colored band increases as the size of the drops increases.</span>" → "The difference in the rainbow depends considerably upon the size of the drops. <span class="add">As the size of the droplets increases, the width of the colored band also expands.</span>"</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
@@ -204,7 +210,7 @@
     <!-- サンプル6 -->
     <div class="sample-container">
         <div class="sample-title">Sample 6</div>
-        <p>"This is the window." → "This is the window. It's not a Japanese invention."</p>
+        <p>"This is the window." → "This is the window. <span class="add">It's not a Japanese invention.</span>"</p>
         <div class="sample-group">
             <div class="sample-item">
                 <label class="label">Original</label>
