@@ -31,6 +31,16 @@
         .audio-block {
             margin-top: 0.5em;
         }
+
+        .rm {
+            text-decoration: line-through;
+            color: red;
+        }
+
+        .add {
+            background-color: yellow;
+            color: green;
+        }
     </style>
 </head>
 
@@ -108,10 +118,126 @@
             return API_ORIGIN + url;
         };
 
+        /**
+         * 2つの英語テキストを比較し、削除された部分と追加された部分を視覚的に表示する関数
+         * @param {string} oldText - 変更前のテキスト
+         * @param {string} newText - 変更後のテキスト
+         * @return {string} 差分がマークアップされたHTML
+         */
+        function compareAndHighlight(oldText, newText) {
+            // 単語に分割（スペースと句読点を考慮）
+            function tokenize(text) {
+                // 句読点を含む単語分割のための正規表現
+                // 単語、句読点、空白をそれぞれ別のトークンとして扱う
+                return text.match(/\w+|[.,!?;:'"()[\]{}]|\s+/g) || [];
+            }
+
+            const oldTokens = tokenize(oldText);
+            const newTokens = tokenize(newText);
+
+            // 最長共通部分列(LCS)アルゴリズムを使用して差分を計算
+            const lcsMatrix = computeLCSMatrix(oldTokens, newTokens);
+            const diff = extractDiff(lcsMatrix, oldTokens, newTokens, oldTokens.length, newTokens.length);
+
+            // 結果を整形
+            const formattedOld = formatDiff(diff, 'old');
+            const formattedNew = formatDiff(diff, 'new');
+
+            return `"${formattedOld}" → "${formattedNew}"`;
+        }
+
+        /**
+         * 最長共通部分列(LCS)の行列を計算
+         */
+        function computeLCSMatrix(oldTokens, newTokens) {
+            const matrix = Array(oldTokens.length + 1).fill().map(() =>
+                Array(newTokens.length + 1).fill(0)
+            );
+
+            for (let i = 1; i <= oldTokens.length; i++) {
+                for (let j = 1; j <= newTokens.length; j++) {
+                    if (oldTokens[i - 1] === newTokens[j - 1]) {
+                        matrix[i][j] = matrix[i - 1][j - 1] + 1;
+                    } else {
+                        matrix[i][j] = Math.max(matrix[i - 1][j], matrix[i][j - 1]);
+                    }
+                }
+            }
+            return matrix;
+        }
+
+        /**
+         * LCS行列から差分情報を抽出
+         */
+        function extractDiff(matrix, oldTokens, newTokens, i, j) {
+            if (i === 0 && j === 0) {
+                return [];
+            } else if (i > 0 && j > 0 && oldTokens[i - 1] === newTokens[j - 1]) {
+                // 一致する場合
+                return [...extractDiff(matrix, oldTokens, newTokens, i - 1, j - 1),
+                { type: 'same', value: oldTokens[i - 1] }];
+            } else if (j > 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
+                // 追加された場合
+                return [...extractDiff(matrix, oldTokens, newTokens, i, j - 1),
+                { type: 'add', value: newTokens[j - 1] }];
+            } else if (i > 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
+                // 削除された場合
+                return [...extractDiff(matrix, oldTokens, newTokens, i - 1, j),
+                { type: 'remove', value: oldTokens[i - 1] }];
+            }
+            return [];
+        }
+
+        /**
+         * 差分情報を整形されたHTMLに変換
+         */
+        function formatDiff(diff, mode) {
+            let result = '';
+            let currentRemoval = [];
+            let currentAddition = [];
+
+            function flushRemovals() {
+                if (currentRemoval.length > 0) {
+                    if (mode === 'old') {
+                        result += `<span class='rm'>${currentRemoval.join('')}</span>`;
+                    }
+                    currentRemoval = [];
+                }
+            }
+
+            function flushAdditions() {
+                if (currentAddition.length > 0) {
+                    if (mode === 'new') {
+                        result += `<span class='add'>${currentAddition.join('')}</span>`;
+                    }
+                    currentAddition = [];
+                }
+            }
+
+            for (const item of diff) {
+                if (item.type === 'same') {
+                    flushRemovals();
+                    flushAdditions();
+                    result += item.value;
+                } else if (item.type === 'remove') {
+                    flushAdditions();
+                    currentRemoval.push(item.value);
+                } else if (item.type === 'add') {
+                    flushRemovals();
+                    currentAddition.push(item.value);
+                }
+            }
+
+            flushRemovals();
+            flushAdditions();
+
+            return result;
+        }
+
         fetch('https://sonookoo.pythonanywhere.com/api/acoustics/')
             .then(response => response.json())
             .then(data => {
-                const groupByOrigin = (items) => {
+                const groupByNum = (items) => {
                     const map = new Map();
                     items.forEach(item => {
                         const groupNum = group_dict[item.text?.trim()] || "Unknown";
@@ -122,22 +248,34 @@
                 };
 
                 const renderSection = (testName, containerId) => {
-                    const filtered = data.filter(item =>
-                        item.mos_test === testName || item.mos_test === 'original'
+                    const filtered_edited = data.filter(item =>
+                        item.mos_test === testName
                     );
-                    const grouped = groupByOrigin(filtered);
+                    const filtered_origin = data.filter(item =>
+                        item.mos_test === 'オリジナル音声'
+                    );
+                    const grouped_edited = groupByNum(filtered_edited);
+                    const grouped_origin = groupByNum(filtered_origin);
 
                     const container = document.getElementById(containerId);
                     container.innerHTML = '';
 
-                    grouped.forEach(([groupNum, items]) => {
+                    grouped.forEach(([groupNum, items_edited, items_origin]) => {
                         const group = document.createElement('div');
                         group.className = 'group';
-                        const transcript = items[0]?.text || "(no text)";
+                        const editedTranscript = items_edited[0]?.text || "(no text)";
+                        const originTranscript = items_origin[0]?.text || "(no text)";
+                        const transcripts = compareAndHighlight(originTranscript, editedTranscript);
                         group.innerHTML = `
-                            <h4>Group ${groupNum}</h4>
-                            <p><strong>Transcript:</strong> ${transcript}</p>
-                            ${items.map(item => `
+                            <h4>Sample ${groupNum}</h4>
+                            <p><strong>Transcript:</strong> ${transcripts}</p>
+                            ${items_origin.map(item => `
+                                <div class="audio-block">
+                                    <span>${item.model_name}:</span>
+                                    <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
+                                </div>
+                            `).join('')}
+                            ${items_edited.map(item => `
                                 <div class="audio-block">
                                     <span>${item.model_name}:</span>
                                     <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
