@@ -172,7 +172,15 @@
             const formattedOld = formatDiff(diff, 'old');
             const formattedNew = formatDiff(diff, 'new');
 
-            return `"${formattedOld}" → "${formattedNew}"`;
+            if (newText === "Both men and women were on oneyear contracts.") {
+                return `"${OldText}" → "Both men <span class='add'>and women</span> were on oneyear contracts."`;
+            } else if (newText === "Many complicated ideas about how the universe evolves have been formed.") {
+                return `"${formattedOld}" → "Many complicated ideas about <span class='add'>how the universe evolves</span> have been formed."`;
+            } else if (newText === "We're not hearing an audio of the person, he said.") {
+                return `"We're not <span class='rm'>seeing an image</span> of the person, he said." → "We're not <span class='add'>hearing an audio</span> of the person, he said."`;
+            } else {
+                return `"${formattedOld}" → "${formattedNew}"`;
+            }
         }
 
         // function compareAndHighlight(oldText, newText) {
@@ -351,10 +359,12 @@
                         // 例外処理
                         if (editedTranscript === "The parties found recently include the scottish executive.") {
                             editedTranscript = "The parties found recently include the Scottish Executive."
-                        } else if (editedTranscript === "Both men and women were on one year contracts.") {
+                        } else if (editedTranscript === "Both men and women were on onyear contracts.") {
                             editedTranscript = "Both men and women were on oneyear contracts."
                         } else if (editedTranscript === "We're not hearing an audio of the person he said.") {
                             editedTranscript = "We're not hearing an audio of the person, he said."
+                        } else if (editedTranscript === "We're not actually seeing an image of the person he said.") {
+                            editedTranscript = "We're not actually seeing an image of the person he said."
                         }
                         const transcripts = compareAndHighlight(originTranscript, editedTranscript);
                         group.innerHTML = `
