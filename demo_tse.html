@@ -284,11 +284,14 @@
                     return Array.from(map.entries()).sort(([a], [b]) => parseInt(a) - parseInt(b));
                 };
 
-                const modelnameMap = {
-                    "a3t_pretrain": "A3T",
-                    "v13": "Ours",
-                    "editspeech": "EditSpeech",
-                    "Original": "Original",
+                const modelnameMap = (key) => {
+                    const d = {
+                        "a3t_pretrain": "A3T",
+                        "v13": "Ours",
+                        "editspeech": "EditSpeech",
+                        "Original": "Original",
+                    };
+                    return d[key];
                 };
 
                 const renderSection = (testName, containerId) => {
@@ -330,7 +333,7 @@
                         <p><strong>Transcript:</strong> ${transcripts}</p>
                         ${items_origin.map(item => `
                             <div class="audio-block">
-                                <span>${modelnameMap[item.model_name]}:</span>
+                                <span>${modelnameMap(item.model_name)}:</span>
                                 <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
                             </div>
                         `).join('')}
