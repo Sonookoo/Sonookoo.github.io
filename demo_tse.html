@@ -361,7 +361,7 @@
                         <p><strong>Transcript:</strong> ${transcripts}</p>
                         ${items_origin.map(item => `
                             <div class="audio-block">
-                                <span>${modelnameMap(item.model_name)}:</span>
+                                <span>${modelnameMap[item.model_name]}:</span>
                                 <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
                             </div>
                         `).join('')}
