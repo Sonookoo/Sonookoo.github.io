@@ -173,7 +173,7 @@
             const formattedNew = formatDiff(diff, 'new');
 
             if (newText === "Both men and women were on one year contracts.") {
-                return `"${OldText}" → "Both men <span class='add'>and women</span> were on oneyear contracts."`;
+                return `"${oldText}" → "Both men <span class='add'>and women</span> were on oneyear contracts."`;
             } else if (newText === "Many complicated ideas about how the universe evolves have been formed.") {
                 return `"${formattedOld}" → "Many complicated ideas about <span class='add'>how the universe evolves</span> have been formed."`;
             } else if (newText === "We're not hearing an audio of the person, he said.") {
