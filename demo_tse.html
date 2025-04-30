@@ -101,6 +101,13 @@
         const group_dict = Object.assign({}, origin_dict, insert_dict, replace_dict);
         console.log(group_dict);
 
+        const API_ORIGIN = 'https://sonookoo.pythonanywhere.com';
+
+        const getFullAudioURL = (url) => {
+            if (url.startsWith('http')) return url;
+            return API_ORIGIN + url;
+        };
+
         fetch('https://sonookoo.pythonanywhere.com/api/acoustics/')
             .then(response => response.json())
             .then(data => {
@@ -133,7 +140,7 @@
                             ${items.map(item => `
                                 <div class="audio-block">
                                     <span>${item.model_name}:</span>
-                                    <audio controls src="${item.audio_url}"></audio>
+                                    <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
                                 </div>
                             `).join('')}
                         `;
