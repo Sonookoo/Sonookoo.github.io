@@ -260,7 +260,11 @@
                     const container = document.getElementById(containerId);
                     container.innerHTML = '';
 
-                    grouped.forEach(([groupNum, items_edited, items_origin]) => {
+                    const length = grouped_edited.length;
+                    for (let i = 0; i < length; i++) {
+                        const groupNum = String(i + 1);
+                        const items_edited = grouped_edited[groupNum][1];
+                        const items_origin = grouped_origin[groupNum][1];
                         const group = document.createElement('div');
                         group.className = 'group';
                         const editedTranscript = items_edited[0]?.text || "(no text)";
@@ -283,7 +287,7 @@
                             `).join('')}
                         `;
                         container.appendChild(group);
-                    });
+                    }
                 };
 
                 renderSection('テスト1', 'test1-container');
