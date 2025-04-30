@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Speech Demo</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2em;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .section-title {
+            margin-top: 2em;
+            border-bottom: 2px solid #333;
+        }
+
+        .group {
+            margin-top: 1.5em;
+            padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .audio-block {
+            margin-top: 0.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Text-based Speech Editing Demo</h1>
+
+    <h2 class="section-title">Insertion (Test 1)</h2>
+    <div id="test1-container">Loading...</div>
+
+    <h2 class="section-title">Replacement (Test 2)</h2>
+    <div id="test2-container">Loading...</div>
+
+    <script>
+        const origin_dict = {
+            "And she is a successful actor with three decades of experience.": "1",
+            "Both men were on one-year contracts.": "2",
+            "For that reason cover should not be given.": "3",
+            "I am totally devoted to this job.": "4",
+            "I can't even get into the A team.": "5",
+            "Initial reports said the aircraft had experienced a loss of power.": "6",
+            "Many complicated ideas about the rainbow have been formed.": "7",
+            "Some have accepted it as a miracle without physical explanation.": "8",
+            "That kind of growth is the important thing.": "9",
+            "The idea has potential for the future.": "10",
+            "The parties include the Scottish Executive.": "11",
+            "This would give Scotland around eight members.": "12",
+            "We're not seeing an image of the person, he said.": "13",
+            "What do we want to do that for?": "14",
+            "You should always be able to get out in some direction.": "15",
+        }
+
+        const insert_dict = {
+            "And she is a successful talented beautiful actor with three decades of experience.": "1",
+            "Both men and women were on one year contracts.": "2",
+            "For that theoretical and realistic reason cover should not be given.": "3",
+            "I am totally interested in and devoted to this job.": "4",
+            "I can't even spare my time to get into the A team.": "5",
+            "Initial reports said the aircraft launched last year had experienced a loss of power.": "6",
+            "Many complicated ideas about the rainbow from researchers have been formed.": "7",
+            "Some have accepted it as a miracle never seen before without physical explanation.": "8",
+            "That kind of growth in childhood is the important thing.": "9",
+            "The idea has large economic potential for the future.": "10",
+            "The parties found recently include the scottish executive.": "11",
+            "This would in fact give Scotland around eight members.": "12",
+            "We're not actually seeing an image of the person he said.": "13",
+            "What do we this afternoon want to do that for?": "14",
+            "You should always be able to take courage and get out in some direction.": "15",
+        }
+
+        const replace_dict = {
+            "And she is a successful actor with about thirty years of experience.": "1",
+            "Both men were on ten months contracts.": "2",
+            "For that reason cover is impossible to be given.": "3",
+            "I am totally fall in love with this job.": "4",
+            "I can't even become a member the A team.": "5",
+            "Initial reports said the new tractor of my friend had experienced a loss of power.": "6",
+            "Many complicated ideas about how the universe evolves have been formed.": "7",
+            "Some have accepted it as an undeniable fact without physical explanation.": "8",
+            "That kind of knowledge from parents is the important thing.": "9",
+            "The idea has severe influence for the future.": "10",
+            "The parties include the English and American executive.": "11",
+            "This would give China and Japan around eight members.": "12",
+            "We're not hearing an audio of the person he said.": "13",
+            "What do we want to figure out for?": "14",
+            "You should always be able to focus your research on some direction.": "15",
+        }
+
+        const group_dict = Object.assign({}, origin_dict, insert_dict, replace_dict);
+        console.log(group_dict);
+    </script>
+
+    <script>
+        fetch('https://sonookoo.pythonanywhere.com/api/acoustics/')
+            .then(response => response.json())
+            .then(data => {
+                const groupByOrigin = (items) => {
+                    const map = new Map();
+                    items.forEach(item => {
+                        const groupNum = group_dict[item.text?.trim()] || "Unknown";
+                        if (!map.has(groupNum)) map.set(groupNum, []);
+                        map.get(groupNum).push(item);
+                    });
+                    return Array.from(map.entries()).sort(([a], [b]) => parseInt(a) - parseInt(b));
+                };
+
+                const renderSection = (testName, containerId) => {
+                    const filtered = data.filter(item => item.mos_test === testName);
+                    const grouped = groupByOrigin(filtered);
+
+                    const container = document.getElementById(containerId);
+                    container.innerHTML = '';
+
+                    grouped.forEach(([groupNum, items]) => {
+                        const group = document.createElement('div');
+                        group.className = 'group';
+                        const transcript = items[0]?.text || "(no text)";
+                        group.innerHTML = `
+                            <h4>Group ${groupNum}</h4>
+                            <p><strong>Transcript:</strong> ${transcript}</p>
+                            ${items.map(item => `
+                                <div class="audio-block">
+                                    <span>${item.model_name}:</span>
+                                    <audio controls src="${item.audio_url}"></audio>
+                                </div>
+                            `).join('')}
+                        `;
+                        container.appendChild(group);
+                    });
+                };
+
+                renderSection('Test 1', 'test1-container');
+                renderSection('Test 2', 'test2-container');
+            })
+            .catch(error => {
+                document.getElementById('test1-container').innerText = 'Failed to load data.';
+                document.getElementById('test2-container').innerText = 'Failed to load data.';
+                console.error(error);
+            });
+    </script>
+</body>
+
+</html>
