@@ -47,6 +47,35 @@
 <body>
     <h1>Text-based Speech Editing Demo</h1>
 
+    <h3>Description</h3>
+    <p>
+        This demo showcases our research on text-based speech editing systems.
+        We utilize the VCTK Dataset as our primary source of speech data.
+        Our approach builds upon and compares with previous works, including A3T [1] and EditSpeech [2],
+        which have laid the foundation for controllable and realistic speech editing via text input.
+    </p>
+
+    <h3>References</h3>
+    <ol>
+        <li>
+            Bai, H., Zheng, R., Chen, J., Ma, M., Li, X.
+            and Huang, L.: <cite>A3T: Alignment-Aware Acoustic and Text Pretraining for Speech Synthesis and Edit-
+                ing</cite>, <em>Proceedings of the 39th International Conference on Machine Learning (Chaudhuri, K.,
+                Jegelka,
+                S., Song, L., Szepesvari, C., Niu, G. and Sabato, S., eds.)</em>, Proceedings of Machine Learning
+            Research,
+            Vol. 162, PMLR, pp. 1399–1411 (online), available from ⟨https://proceedings.mlr.press/v162/bai22d.html⟩
+            (2022).
+        </li>
+        <li>
+            Tan, D., Deng, L., Yeung, Y. T., Jiang, X., Chen, X. and Lee, T.: <cite>EditSpeech: A Text Based Speech
+                Editing
+                System Using Partial Inference and Bidirectional Fusion</cite>, <em>2021 IEEE Automatic Speech
+                Recognition and
+                Understanding Workshop (ASRU)</em>, pp. 626–633 (online), DOI: 10.1109/ASRU51503.2021.9688051 (2021).
+        </li>
+    </ol>
+
     <h2 class="section-title">Insertion (Test 1)</h2>
     <div id="test1-container">Loading...</div>
 
@@ -124,24 +153,66 @@
          * @param {string} newText - 変更後のテキスト
          * @return {string} 差分がマークアップされたHTML
          */
+        // function compareAndHighlight(oldText, newText) {
+        //     // 単語に分割（スペースと句読点を考慮）
+        //     function tokenize(text) {
+        //         // 句読点を含む単語分割のための正規表現
+        //         // 単語、句読点、空白をそれぞれ別のトークンとして扱う
+        //         return text.match(/\w+|[.,!?;:'"()[\]{}]|\s+/g) || [];
+        //     }
+
+        //     const oldTokens = tokenize(oldText);
+        //     const newTokens = tokenize(newText);
+
+        //     // 最長共通部分列(LCS)アルゴリズムを使用して差分を計算
+        //     const lcsMatrix = computeLCSMatrix(oldTokens, newTokens);
+        //     const diff = extractDiff(lcsMatrix, oldTokens, newTokens, oldTokens.length, newTokens.length);
+
+        //     // 結果を整形
+        //     const formattedOld = formatDiff(diff, 'old');
+        //     const formattedNew = formatDiff(diff, 'new');
+
+        //     return `"${formattedOld}" → "${formattedNew}"`;
+        // }
+
         function compareAndHighlight(oldText, newText) {
-            // 単語に分割（スペースと句読点を考慮）
-            function tokenize(text) {
-                // 句読点を含む単語分割のための正規表現
-                // 単語、句読点、空白をそれぞれ別のトークンとして扱う
-                return text.match(/\w+|[.,!?;:'"()[\]{}]|\s+/g) || [];
+            // 前後から比較して共通部分を見つける
+            let prefixLength = 0;
+            let suffixLength = 0;
+
+            // 前から一致する部分を探す
+            const minLength = Math.min(oldText.length, newText.length);
+            while (prefixLength < minLength && oldText[prefixLength] === newText[prefixLength]) {
+                prefixLength++;
             }
 
-            const oldTokens = tokenize(oldText);
-            const newTokens = tokenize(newText);
+            // 後ろから一致する部分を探す（すでに見つかった前方一致部分を除く）
+            while (
+                suffixLength < minLength - prefixLength &&
+                oldText[oldText.length - 1 - suffixLength] === newText[newText.length - 1 - suffixLength]
+            ) {
+                suffixLength++;
+            }
 
-            // 最長共通部分列(LCS)アルゴリズムを使用して差分を計算
-            const lcsMatrix = computeLCSMatrix(oldTokens, newTokens);
-            const diff = extractDiff(lcsMatrix, oldTokens, newTokens, oldTokens.length, newTokens.length);
+            // 前後の一致部分を取得
+            const prefix = oldText.substring(0, prefixLength);
+            const oldMiddle = oldText.substring(prefixLength, oldText.length - suffixLength);
+            const newMiddle = newText.substring(prefixLength, newText.length - suffixLength);
+            const suffix = oldText.substring(oldText.length - suffixLength);
 
-            // 結果を整形
-            const formattedOld = formatDiff(diff, 'old');
-            const formattedNew = formatDiff(diff, 'new');
+            // 変更前テキストの整形
+            let formattedOld = prefix;
+            if (oldMiddle) {
+                formattedOld += `<span class='rm'>${oldMiddle}</span>`;
+            }
+            formattedOld += suffix;
+
+            // 変更後テキストの整形
+            let formattedNew = prefix;
+            if (newMiddle) {
+                formattedNew += `<span class='add'>${newMiddle}</span>`;
+            }
+            formattedNew += suffix;
 
             return `"${formattedOld}" → "${formattedNew}"`;
         }
@@ -247,6 +318,12 @@
                     return Array.from(map.entries()).sort(([a], [b]) => parseInt(a) - parseInt(b));
                 };
 
+                const modelnameMap = {
+                    "a3t_pretrain": "A3T",
+                    "v13": "Ours",
+                    "editspeech": "EditSpeech",
+                };
+
                 const renderSection = (testName, containerId) => {
                     const filtered_edited = data.filter(item =>
                         item.mos_test === testName
@@ -267,25 +344,34 @@
                         const items_origin = grouped_origin[i][1];
                         const group = document.createElement('div');
                         group.className = 'group';
-                        const editedTranscript = items_edited[0]?.text || "(no text)";
+                        let editedTranscript = items_edited[0]?.text || "(no text)";
                         const originTranscript = items_origin[0]?.text || "(no text)";
+
+                        // 例外処理
+                        if (editedTranscript === "The parties found recently include the scottish executive.") {
+                            editedTranscript = "The parties found recently include the Scottish Executive."
+                        } else if (editedTranscript === "Both men and women were on one year contracts.") {
+                            editedTranscript = "Both men and women were on oneyear contracts."
+                        } else if (editedTranscript === "We're not hearing an audio of the person he said.") {
+                            editedTranscript = "We're not hearing an audio of the person, he said."
+                        }
                         const transcripts = compareAndHighlight(originTranscript, editedTranscript);
                         group.innerHTML = `
-                            <h4>Sample ${groupNum}</h4>
-                            <p><strong>Transcript:</strong> ${transcripts}</p>
-                            ${items_origin.map(item => `
-                                <div class="audio-block">
-                                    <span>${item.model_name}:</span>
-                                    <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
-                                </div>
-                            `).join('')}
-                            ${items_edited.map(item => `
-                                <div class="audio-block">
-                                    <span>${item.model_name}:</span>
-                                    <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
-                                </div>
-                            `).join('')}
-                        `;
+                        <h4>Sample ${groupNum}</h4>
+                        <p><strong>Transcript:</strong> ${transcripts}</p>
+                        ${items_origin.map(item => `
+                            <div class="audio-block">
+                                <span>${modelnameMap(item.model_name)}:</span>
+                                <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
+                            </div>
+                        `).join('')}
+                        ${items_edited.map(item => `
+                            <div class="audio-block">
+                                <span>${item.model_name}:</span>
+                                <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
+                            </div>
+                        `).join('')}
+                    `;
                         container.appendChild(group);
                     }
                 };
