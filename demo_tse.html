@@ -100,9 +100,7 @@
 
         const group_dict = Object.assign({}, origin_dict, insert_dict, replace_dict);
         console.log(group_dict);
-    </script>
 
-    <script>
         fetch('https://sonookoo.pythonanywhere.com/api/acoustics/')
             .then(response => response.json())
             .then(data => {
@@ -117,7 +115,9 @@
                 };
 
                 const renderSection = (testName, containerId) => {
-                    const filtered = data.filter(item => item.mos_test === testName);
+                    const filtered = data.filter(item =>
+                        item.mos_test === testName || item.mos_test === 'original'
+                    );
                     const grouped = groupByOrigin(filtered);
 
                     const container = document.getElementById(containerId);
@@ -141,8 +141,8 @@
                     });
                 };
 
-                renderSection('Test 1', 'test1-container');
-                renderSection('Test 2', 'test2-container');
+                renderSection('テスト1', 'test1-container');
+                renderSection('テスト2', 'test2-container');
             })
             .catch(error => {
                 document.getElementById('test1-container').innerText = 'Failed to load data.';
