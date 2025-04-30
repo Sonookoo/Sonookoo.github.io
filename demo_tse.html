@@ -339,7 +339,7 @@
                         `).join('')}
                         ${items_edited.map(item => `
                             <div class="audio-block">
-                                <span>${item.model_name}:</span>
+                                <span>${modelnameMap(item.model_name)}:</span>
                                 <audio controls src="${getFullAudioURL(item.audio_url)}"></audio>
                             </div>
                         `).join('')}
