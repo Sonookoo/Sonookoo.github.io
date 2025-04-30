@@ -263,8 +263,8 @@
                     const length = grouped_edited.length;
                     for (let i = 0; i < length; i++) {
                         const groupNum = String(i + 1);
-                        const items_edited = grouped_edited[groupNum][1];
-                        const items_origin = grouped_origin[groupNum][1];
+                        const items_edited = grouped_edited[i][1];
+                        const items_origin = grouped_origin[i][1];
                         const group = document.createElement('div');
                         group.className = 'group';
                         const editedTranscript = items_edited[0]?.text || "(no text)";
