@@ -153,69 +153,69 @@
          * @param {string} newText - 変更後のテキスト
          * @return {string} 差分がマークアップされたHTML
          */
-        // function compareAndHighlight(oldText, newText) {
-        //     // 単語に分割（スペースと句読点を考慮）
-        //     function tokenize(text) {
-        //         // 句読点を含む単語分割のための正規表現
-        //         // 単語、句読点、空白をそれぞれ別のトークンとして扱う
-        //         return text.match(/\w+|[.,!?;:'"()[\]{}]|\s+/g) || [];
-        //     }
-
-        //     const oldTokens = tokenize(oldText);
-        //     const newTokens = tokenize(newText);
-
-        //     // 最長共通部分列(LCS)アルゴリズムを使用して差分を計算
-        //     const lcsMatrix = computeLCSMatrix(oldTokens, newTokens);
-        //     const diff = extractDiff(lcsMatrix, oldTokens, newTokens, oldTokens.length, newTokens.length);
-
-        //     // 結果を整形
-        //     const formattedOld = formatDiff(diff, 'old');
-        //     const formattedNew = formatDiff(diff, 'new');
-
-        //     return `"${formattedOld}" → "${formattedNew}"`;
-        // }
-
         function compareAndHighlight(oldText, newText) {
-            // 前後から比較して共通部分を見つける
-            let prefixLength = 0;
-            let suffixLength = 0;
-
-            // 前から一致する部分を探す
-            const minLength = Math.min(oldText.length, newText.length);
-            while (prefixLength < minLength && oldText[prefixLength] === newText[prefixLength]) {
-                prefixLength++;
+            // 単語に分割（スペースと句読点を考慮）
+            function tokenize(text) {
+                // 句読点を含む単語分割のための正規表現
+                // 単語、句読点、空白をそれぞれ別のトークンとして扱う
+                return text.match(/\w+|[.,!?;:'"()[\]{}]|\s+/g) || [];
             }
 
-            // 後ろから一致する部分を探す（すでに見つかった前方一致部分を除く）
-            while (
-                suffixLength < minLength - prefixLength &&
-                oldText[oldText.length - 1 - suffixLength] === newText[newText.length - 1 - suffixLength]
-            ) {
-                suffixLength++;
-            }
+            const oldTokens = tokenize(oldText);
+            const newTokens = tokenize(newText);
 
-            // 前後の一致部分を取得
-            const prefix = oldText.substring(0, prefixLength);
-            const oldMiddle = oldText.substring(prefixLength, oldText.length - suffixLength);
-            const newMiddle = newText.substring(prefixLength, newText.length - suffixLength);
-            const suffix = oldText.substring(oldText.length - suffixLength);
+            // 最長共通部分列(LCS)アルゴリズムを使用して差分を計算
+            const lcsMatrix = computeLCSMatrix(oldTokens, newTokens);
+            const diff = extractDiff(lcsMatrix, oldTokens, newTokens, oldTokens.length, newTokens.length);
 
-            // 変更前テキストの整形
-            let formattedOld = prefix;
-            if (oldMiddle) {
-                formattedOld += `<span class='rm'>${oldMiddle}</span>`;
-            }
-            formattedOld += suffix;
-
-            // 変更後テキストの整形
-            let formattedNew = prefix;
-            if (newMiddle) {
-                formattedNew += `<span class='add'>${newMiddle}</span>`;
-            }
-            formattedNew += suffix;
+            // 結果を整形
+            const formattedOld = formatDiff(diff, 'old');
+            const formattedNew = formatDiff(diff, 'new');
 
             return `"${formattedOld}" → "${formattedNew}"`;
         }
+
+        // function compareAndHighlight(oldText, newText) {
+        //     // 前後から比較して共通部分を見つける
+        //     let prefixLength = 0;
+        //     let suffixLength = 0;
+
+        //     // 前から一致する部分を探す
+        //     const minLength = Math.min(oldText.length, newText.length);
+        //     while (prefixLength < minLength && oldText[prefixLength] === newText[prefixLength]) {
+        //         prefixLength++;
+        //     }
+
+        //     // 後ろから一致する部分を探す（すでに見つかった前方一致部分を除く）
+        //     while (
+        //         suffixLength < minLength - prefixLength &&
+        //         oldText[oldText.length - 1 - suffixLength] === newText[newText.length - 1 - suffixLength]
+        //     ) {
+        //         suffixLength++;
+        //     }
+
+        //     // 前後の一致部分を取得
+        //     const prefix = oldText.substring(0, prefixLength);
+        //     const oldMiddle = oldText.substring(prefixLength, oldText.length - suffixLength);
+        //     const newMiddle = newText.substring(prefixLength, newText.length - suffixLength);
+        //     const suffix = oldText.substring(oldText.length - suffixLength);
+
+        //     // 変更前テキストの整形
+        //     let formattedOld = prefix;
+        //     if (oldMiddle) {
+        //         formattedOld += `<span class='rm'>${oldMiddle}</span>`;
+        //     }
+        //     formattedOld += suffix;
+
+        //     // 変更後テキストの整形
+        //     let formattedNew = prefix;
+        //     if (newMiddle) {
+        //         formattedNew += `<span class='add'>${newMiddle}</span>`;
+        //     }
+        //     formattedNew += suffix;
+
+        //     return `"${formattedOld}" → "${formattedNew}"`;
+        // }
 
         /**
          * 最長共通部分列(LCS)の行列を計算
@@ -322,6 +322,7 @@
                     "a3t_pretrain": "A3T",
                     "v13": "Ours",
                     "editspeech": "EditSpeech",
+                    "Original": "Original",
                 };
 
                 const renderSection = (testName, containerId) => {
